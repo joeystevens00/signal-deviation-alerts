@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "Signal Deviation Alerts"
+version = "0.1.0"
+description = ""
+authors = ["Joey Stevens <joey.stevens00@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+matrix-nio = "^0.10.0"
+click = "^7.1.1"
+pydantic = "^1.4"
+pyyaml = "^5.3.1"
+aiohttp = "^3.6.2"
+pandas = "^1.0.3"
+tables = "^3.6.1"
+jinja2 = "^2.11.1"
+psutil = "^5.7.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

@@ -1,0 +1,5 @@
+scripts/deploy.sh
+state.pickle
+poetry.lock
+data/
+__pycache__

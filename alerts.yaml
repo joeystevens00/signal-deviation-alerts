@@ -1,0 +1,100 @@
+- condition:
+    signal: server_load_1m
+    timeframe:
+      minutes: 30
+    difference: 10
+  room: server_alerts
+  message: Server Load Average (1m) ({{ last }}) moved {{ direction }} {{ diff }}% in the last 30 minutes ({{ first }}).
+  signal_poll_rate: 30
+- condition:
+    signal: server_load_5m
+    timeframe:
+      minutes: 60
+    difference: 10
+  room: server_alerts
+  message: Server Load Average (5m) ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
+- condition:
+    signal: server_load_15m
+    timeframe:
+      minutes: 60
+    difference: 10
+  room: server_alerts
+  message: Server Load Average (15m) ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
+- condition:
+    signal: server_disk_usage_percent
+    timeframe:
+      days: 30
+    difference: 10
+    signal_poll_rate: 43200
+    cooloff: 86400
+  room: server_alerts
+  message: Server Disk Usage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 30 days ({{ first }}).
+- condition:
+    signal: server_memory_usage_percentage
+    timeframe:
+      minutes: 60
+    difference: 10
+    signal_poll_rate: 30
+  room: server_alerts
+  message: Server Memory Usage Percentage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
+- condition:
+    signal: btc_price
+    timeframe:
+      hours: 4
+    difference: 2
+  room: btc_price_alerts
+  message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 4 hours ({{ first }}).
+- condition:
+    signal: btc_price
+    timeframe:
+      hours: 4
+    difference: 5
+  room: btc_price_alerts
+  message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 4 hours ({{ first }}).
+- condition:
+    signal: btc_price
+    timeframe:
+      hours: 8
+    difference: 5
+  room: btc_price_alerts
+  message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 8 hours ({{ first }}).
+- condition:
+    signal: btc_price
+    timeframe:
+      hours: 8
+    difference: 5
+  room: btc_price_alerts
+  message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 8 hours ({{ first }}) (min-max).
+  signal_read_strategy: min_max
+- condition:
+    signal: btc_price
+    timeframe:
+      hours: 8
+    difference: 10
+  room: btc_price_alerts
+  message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 8 hours ({{ first }}).
+  signal_poll_rate: 600
+- condition:
+    signal: btc_price
+    timeframe:
+      hours: 24
+    difference: 12
+  room: btc_price_alerts
+  message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 24 hours ({{ first }}).
+  signal_poll_rate: 1800
+- condition:
+    signal: btc_stock_to_flow
+    timeframe:
+      days: 30
+    difference: 1
+  room: btc_price_alerts
+  message: Stock To Flow Deflection ({{ last }}) moved {{ direction }} {{ diff }}% in the last 30 days ({{ first }}).
+  signal_poll_rate: 43200
+- condition:
+    signal: btc_stock_to_flow
+    timeframe:
+      days: 30
+    difference: 2
+  room: btc_price_alerts
+  message: Stock To Flow Deflection ({{ last }}) moved {{ direction }} {{ diff }}% in the last 30 days ({{ first }}).
+  signal_poll_rate: 43200
