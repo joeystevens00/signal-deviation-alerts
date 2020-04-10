@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "Signal Deviation Alerts"
-version = "0.1.0"
+name = "Signal_Deviation_Alerts"
+version = "0.1.1"
 description = ""
 authors = ["Joey Stevens <joey.stevens00@gmail.com>"]
 
@@ -15,6 +15,9 @@ pandas = "^1.0.3"
 tables = "^3.6.1"
 jinja2 = "^2.11.1"
 psutil = "^5.7.0"
+redis = "^3.4.1"
+fastapi = "^0.54.1"
+uvicorn = "^0.11.3"
 
 [tool.poetry.dev-dependencies]
 

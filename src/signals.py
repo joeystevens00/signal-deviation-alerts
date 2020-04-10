@@ -9,11 +9,11 @@ import asyncio
 import aiohttp
 import pandas as pd
 import psutil
-from pydantic import BaseSettings
 
-from log import main as send_matrix_message, logger
+from log import main as send_matrix_message
 from util import Borg
 
+from c import Settings, logger
 
 class SignalMap:
     __shared_state = {}
@@ -47,13 +47,6 @@ def register_signal(name):
         logger.debug(f"Signals {signals.value}")
         return func
     return wrapper
-
-
-class Settings(BaseSettings):
-    glassnode_api_key: Optional[str]
-
-    class Config:
-        env_file = '.env'
 
 
 class HttpSignal:

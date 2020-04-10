@@ -3,7 +3,6 @@ import argparse
 from datetime import datetime
 import functools
 import json
-import logging
 import pickle
 import os
 import socket
@@ -12,11 +11,8 @@ import sys
 from nio import AsyncClient
 from nio.responses import RoomResolveAliasResponse
 
-logging.basicConfig(
-    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-)
-logger = logging.getLogger(__name__)
+from c import logger
+
 
 state_file = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),

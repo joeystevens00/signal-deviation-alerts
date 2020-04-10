@@ -64,7 +64,7 @@
       hours: 8
     difference: 5
   room: btc_price_alerts
-  message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 8 hours ({{ first }}) (min-max).
+  message: BTC Price max ({{ last }}) is {{ diff }}% higher than the min price in the last 8 hours ({{ first }}).
   signal_read_strategy: min_max
 - condition:
     signal: btc_price

@@ -1,0 +1,19 @@
+# Custom Signals in the API
+Register a signal, give a unique name, then transmit data either via REST API or websocket
+
+class Signal:
+  name: str
+class SignalData:
+  name: str # Signal.name
+  data: float
+POST /signal
+POST /signal/{name}/data
+WSS /signal
+
+
+# HTTP Callback Action in API
+Send Alert as an HTTP request
+
+
+# Websocket Action in API
+Send Alert to Websocket

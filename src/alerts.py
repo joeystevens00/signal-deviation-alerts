@@ -13,14 +13,14 @@ import click
 import jinja2
 import pandas as pd
 from pandas import DataFrame, Timestamp, Timedelta
-from pydantic import BaseModel
+from model import BaseModel
 import yaml
 
 
-from log import main as send_matrix_message, logger
+from log import main as send_matrix_message
 from signals import SignalMap, EOF
 from util import Borg, get_deviation_percentage, schedule_func
-
+from c import logger
 
 class MatrixConfig(BaseModel):
     host: str
@@ -39,6 +39,11 @@ def render_message(alert, signal_reading):
         **signal_reading.dict(),
         direction='up' if signal_reading.increased else 'down',
     )
+
+
+async def send_to_file(alert, signal_reading, file):
+    with open(file, 'a') as f:
+        f.write(render_message(alert, signal_reading) + "\n")
 
 
 async def send_to_stdout(alert, signal_reading):
@@ -72,11 +77,11 @@ class SignalReading(BaseModel):
 
 
 class SignalStrategy(enum.Enum):
-    first_last = 'first_last'
+    oldest_newest = 'oldest_newest'
     min_max = 'min_max'
 
 
-def signal_strategy_first_last(df):
+def signal_strategy_oldest_newest(df):
     return (
         float(df.sort_index(ascending=False).tail(1).iloc[0]),
         float(df.sort_index(ascending=False).head(1).iloc[0]),
@@ -97,7 +102,11 @@ class Alert(BaseModel):
     last_notified: Optional[datetime]
     cooloff: Optional[timedelta]
     signal_poll_rate: int = 60
-    signal_read_strategy: SignalStrategy = SignalStrategy.first_last
+    signal_read_strategy: SignalStrategy = SignalStrategy.oldest_newest
+
+    @property
+    def id(self):
+        return hashlib.sha256(repr(self.dict()).encode('utf-8')).hexdigest()
 
     @property
     def timeframe(self):
@@ -124,7 +133,7 @@ class Alert(BaseModel):
     @property
     def signal_read_strategy_func(self):
         m = {
-            SignalStrategy.first_last: signal_strategy_first_last,
+            SignalStrategy.oldest_newest: signal_strategy_oldest_newest,
             SignalStrategy.min_max: signal_strategy_min_max,
         }
         return m[self.signal_read_strategy]
@@ -139,9 +148,14 @@ class Alerts:
             self.data
         except AttributeError:
             self.data = {}
+        try:
+            self.api
+        except AttributeError:
+            self.api = {}
 
 
 def load_signal_database(dir):
+    logger.debug(f"Loading signal database: {dir}")
     alerts = Alerts()
     for path in os.path.os.listdir(dir):
         if path.endswith('.hdf5'):
@@ -159,11 +173,10 @@ class AlertTask:
     def __str__(self):
         return f"<AlertTask {self.alert}>"
 
-
     async def injest(self):
         alerts = Alerts()
         signal_value = await self.signal()
-        alert_id = hashlib.sha256(repr(self.alert).encode('utf-8')).hexdigest()
+        alert_id = self.alert.id
         data_in = DataFrame([{'timestamp': Timestamp.utcnow(), 'value': signal_value}]).set_index('timestamp')
         if alerts.data.get(alert_id) is None:
             alerts.data[alert_id] = data_in
@@ -174,13 +187,16 @@ class AlertTask:
         return alerts.data[alert_id]
 
     async def _calculate_signal_deviation(self, df):
+        # first, last
+        # oldest, newest
+        # min, max
         first, last = self.alert.signal_read_strategy_func(df)
 
         diff = get_deviation_percentage(first, last)
         signal_reading = SignalReading(
             first=float(first),
             last=float(last),
-            increased=float(first)>float(last),
+            increased=float(first)<float(last),
             diff=float(diff),
         )
         logger.debug(f"{self}: considering alerting ({self.alert.condition.difference} <= {diff}) for {signal_reading}")
@@ -238,31 +254,42 @@ def cli(verbose):
         logger.setLevel('DEBUG')
 
 
+def create_register_alert_task(alert, loop, schedule, func, **kwargs):
+    signals = SignalMap()
+    print("alert condition ", alert.condition)
+    signal = signals.value[alert.condition.signal.lower()]
+    update = AlertTask(
+        loop=loop,
+        signal=signal(loop=loop),
+        alert=alert,
+        alert_action=functools.partial(
+            func,
+            **kwargs,
+        ),
+    )
+    refresh_task = schedule(
+        update,
+        interval=alert.signal_poll_rate,
+    )
+    return update, refresh_task
 
-def process_alerts_from_file(datadir, file, func, **kwargs):
+
+def get_schedule(loop=None):
     create_scheduler = lambda loop: functools.partial(
         schedule_func, loop=loop,
     )
+    return create_scheduler(
+        loop=(loop or asyncio.get_event_loop())
+    )
 
+
+def process_alerts_from_file(datadir, file, func, **kwargs):
+    logger.debug(f"Processing alerts from file {file}")
     loop = asyncio.new_event_loop()
-    schedule = create_scheduler(loop=loop)
+    schedule = get_schedule(loop)
 
     for alert in Alert.load_collection(file):
-        signals = SignalMap()
-        signal = signals.value[alert.condition.signal.lower()]
-        update = AlertTask(
-            loop=loop,
-            signal=signal(loop=loop),
-            alert=alert,
-            alert_action=functools.partial(
-                func,
-                **kwargs,
-            ),
-        )
-        refresh_task = schedule(
-            update,
-            interval=alert.signal_poll_rate,
-        )
+        create_register_alert_task(alert, loop, schedule, func, **kwargs)
 
     save_db_task = schedule(
         functools.partial(save_signal_database_async, datadir=datadir),
@@ -275,7 +302,7 @@ def process_alerts_from_file(datadir, file, func, **kwargs):
 @click.option(
     '-d', '--datadir', 'datadir', type=click.Path(),
     help='Directory to save signal database to',
-    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data'),
+    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data'),
 )
 @click.option('-f', '--file', 'file', type=click.Path(),
               help='Alerts to load', required=True)
@@ -302,7 +329,7 @@ def matrix_room(datadir, file, host, user, password):
 @click.option(
     '-d', '--datadir', 'datadir', type=click.Path(),
     help='Directory to save signal database to',
-    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data'),
+    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data'),
 )
 @click.option('-f', '--file', 'file', type=click.Path(),
               help='Alerts to load', required=True)
@@ -310,6 +337,23 @@ def stdout(datadir, file):
     load_signal_database(datadir)
     process_alerts_from_file(
         datadir, file, send_to_stdout,
+    )
+
+
+@cli.command()
+@click.option(
+    '-d', '--datadir', 'datadir', type=click.Path(),
+    help='Directory to save signal database to',
+    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data'),
+)
+@click.option('-f', '--file', 'file', type=click.Path(),
+              help='Alerts to load', required=True)
+@click.option('-o', '--out', 'out', type=click.Path(),
+              help='Path to save alerts to', required=True)
+def file(datadir, file, out):
+    load_signal_database(datadir)
+    process_alerts_from_file(
+        datadir, file, functools.partial(send_to_file, file=out),
     )
 
 
