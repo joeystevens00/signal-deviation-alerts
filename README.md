@@ -1,4 +1,6 @@
 ### Signal Deviation Alerts
+[![Build Status](https://travis-ci.com/joeystevens00/signal-deviation-alerts.svg?branch=master)](https://travis-ci.com/joeystevens00/signal-deviation-alerts)
+
 Trigger an action when a signal deviates more than a percentage.
 
 
