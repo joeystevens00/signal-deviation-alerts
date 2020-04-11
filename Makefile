@@ -26,12 +26,15 @@ docker_cli: requirements.txt
 docker_api: requirements.txt
 	env HOSTNAME=$(shell hostname)-signal_alerts_api $(call compose,api/docker-compose.yaml)
 
-
 .PHONY: mormo_test
 mormo_test:
 	curl http://localhost:8000/openapi.json > openapi.json
 	mormo run -t api_mormo.yaml -i openapi.json -o /tmp/matrix_logger_mormo.json --test --host http://localhost:8000 --verbose
 
+.PHONY: signal_data
+signal_data:
+	docker volume inspect signaldata 2>/dev/null | docker volume create signaldata
+
 .PHONY: docker_mormo_test
-docker_mormo_test:
+docker_mormo_test: signal_data
 	env MORMO_FILE=api_mormo.yaml MORMO_HOST=http://$(DOCKER_HOST):8000 docker-compose --file api/docker-compose.yaml --file api/mormo/docker-compose.yaml up --build --abort-on-container-exit
