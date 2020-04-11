@@ -1,0 +1,44 @@
+Collection:
+  expect:
+    response_time: 150
+    fake_data: True
+    enabled_tests: [schema_validation, code, content_type, response_time]
+POST /signal/data:
+  variables:
+    name: signal
+    data: 10.50
+# POST /signal/data:
+#   variables:
+#     name: "btc_price"
+#     data: 10.50
+#   expect:
+#     code: 403
+POST /alert:
+  variables: ./test/alerts/btc_price_4pcnt_4h.yaml
+  make_global:
+    alert_id: .id
+GET /alert/{alert_id}:
+  variables:
+    alert_id: "{{alert_id}}"
+POST /matrix/config:
+  variables:
+    host: https://localhost
+    user: user
+    password: pass
+  make_global:
+    config_id: .id
+GET /matrix/config/{matrix_config_id}:
+  variables:
+    matrix_config_id: "{{config_id}}"
+POST /matrix/action:
+  variables:
+    config_id: "{{config_id}}"
+    alert_id: "{{alert_id}}"
+  make_global:
+    action_id: .id
+GET /matrix/action/{action_id}:
+  variables:
+    action_id: "{{action_id}}"
+POST /matrix/action/{action_id}/register:
+  variables:
+    action_id: "{{action_id}}"

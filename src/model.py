@@ -20,12 +20,6 @@ class BaseModel(PyDanticBaseModel):
         d = json.loads(self.json(by_alias=True))
         return d
 
-    def resolve_ref(self, schema):
-        from .convert import OpenAPIToPostman
-        if issubclass(schema.__class__, BaseModel):
-            schema = schema.to_dict()
-        return OpenAPIToPostman.find_ref(self.ref, schema)
-
     def get_safe(self, v):
         try:
             return self.__getattribute__(v)

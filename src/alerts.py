@@ -54,6 +54,7 @@ async def send_to_matrix_room(alert, signal_reading, matrix_config):
     message = render_message(alert, signal_reading)
     logger.debug(f"Sending {alert} message {message}")
     matrix_log = {**matrix_config.dict(), 'message': message, 'room': alert.room}
+    logger.debug("Matrix Log: " + repr(matrix_log))
     ret = await send_matrix_message(
         MatrixLog(**matrix_log)
     )
@@ -168,23 +169,32 @@ class AlertTask:
         self.loop = loop
         self.alert = alert
         self.signal = signal
+        self.signal_name = alert.condition.signal.lower()
         self.alert_action = alert_action
 
     def __str__(self):
         return f"<AlertTask {self.alert}>"
 
-    async def injest(self):
+    @classmethod
+    def injest_reading(cls, signal_name, signal_value):
         alerts = Alerts()
-        signal_value = await self.signal()
-        alert_id = self.alert.id
-        data_in = DataFrame([{'timestamp': Timestamp.utcnow(), 'value': signal_value}]).set_index('timestamp')
-        if alerts.data.get(alert_id) is None:
-            alerts.data[alert_id] = data_in
+        data_in = DataFrame([{
+            'timestamp': Timestamp.utcnow(),
+            'value': signal_value
+        }]).set_index('timestamp')
+        if alerts.data.get(signal_name) is None:
+            alerts.data[signal_name] = data_in
         else:
-            alerts.data[alert_id] = pd.concat([alerts.data[alert_id], data_in])
+            alerts.data[signal_name] = pd.concat([alerts.data[signal_name], data_in])
+        return alerts.data[signal_name]
+
+    def truncate_to_alert_timeframe(self, df):
         # Truncate to only data in the timeframe
-        alerts.data[alert_id] = alerts.data[alert_id][Timestamp.utcnow()-self.alert.timeframe_pd<alerts.data[alert_id].index]
-        return alerts.data[alert_id]
+        return df[Timestamp.utcnow()-self.alert.timeframe_pd<df.index].dropna()
+
+    async def injest(self):
+        signal_value = await self.signal()
+        return self.injest_reading(self.signal_name, signal_value)
 
     async def _calculate_signal_deviation(self, df):
         # first, last
@@ -219,7 +229,7 @@ class AlertTask:
     async def __call__(self):
         try:
             df = await self.injest()
-            df = df.dropna()
+            df = self.truncate_to_alert_timeframe(df)
         except Exception as e:
             logger.debug(f"Error in injest: {e}")
             raise e

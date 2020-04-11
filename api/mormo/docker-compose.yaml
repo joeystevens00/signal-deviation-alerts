@@ -1,0 +1,17 @@
+version: '3.3'
+
+services:
+  mormo:
+    depends_on:
+      - redis
+    restart: always
+    ports:
+      - 8001:8001
+    environment:
+      - REDIS_HOST=redis
+    build:
+      context: mormo/
+      dockerfile: Dockerfile
+      args:
+        file: "${MORMO_FILE}"
+        host: "${MORMO_HOST}"

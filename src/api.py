@@ -7,8 +7,8 @@ from uvicorn.config import Config
 from uvicorn.main import Server
 
 from alerts import (
-    Alert, create_register_alert_task, get_schedule,
-    MatrixConfig, send_to_matrix_room,
+    Alert, AlertTask, create_register_alert_task, get_schedule,
+    MatrixConfig, send_to_matrix_room, SignalMap,
 )
 from c import logger
 from model import BaseModel
@@ -19,6 +19,14 @@ app = FastAPI(version='0.1.0')
 # class Action(BaseModel):
 #     action_id: str
 #     alert_id: str
+
+class Signal(BaseModel):
+    name: str
+
+
+class SignalData(BaseModel):
+    name: str
+    data: float
 
 
 class MatrixAction(BaseModel):
@@ -36,6 +44,10 @@ class SaveAlertResult(SaveDB):
 
 class SaveMatrixResult(SaveDB):
     object: MatrixConfig
+
+
+class SaveSignalResult(SaveDB):
+    object: Signal
 
 
 # class SaveActionResult(SaveDB):
@@ -59,6 +71,26 @@ class API:
             self.loop
         except AttributeError:
             self.loop = asyncio.get_event_loop()
+
+
+# @app.post("/signal", response_model=SaveSignalResult)
+# def new_signal(o: Signal) -> SaveSignalResult:
+#     """New Schema."""
+#     return save_db(o).to_dict()
+#
+#
+# @app.get("/signal/{signal_id}", response_model=Signal)
+# def get_signal(signal_id) -> Signal:
+#     """Get Signal by ID."""
+#     return load_db(signal_id)
+
+
+@app.post("/signal/data", status_code=204, response_class=Response)
+def injest_signal_data(o: SignalData) -> None:
+    """Post a reading for a custom Signal."""
+    if o.name in SignalMap().value.keys():
+        return Response(content='Unable to injest data for builtin signals', status_code=403)
+    AlertTask.injest_reading(o.name, o.data)
 
 
 @app.post("/alert", response_model=SaveAlertResult)

@@ -1,0 +1,7 @@
+condition:
+  signal: btc_price
+  timeframe:
+    hours: 4
+  difference: 4
+room: btc_price_alerts
+message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 4 hours ({{ first }}).
