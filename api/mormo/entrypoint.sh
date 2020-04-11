@@ -7,5 +7,4 @@ function wait_for_service {
 }
 wait_for_service
 
-curl $host/openapi.json > openapi.json
-mormo run -i openapi.json --test --host $host -t $file --verbose
+mormo test --target $host/openapi.json --config $file --verbose

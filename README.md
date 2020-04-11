@@ -15,10 +15,11 @@ Example with matrix-room action:
   message: BTC Price ({{ last }}) moved {{ direction }} {{ diff }}% in the last 4 hours ({{ first }}).
 ```
 
-Would send a message to the room `btc_price_alerts` like:
+Would send messages to the room `btc_price_alerts` like:
 
 ```
-BTC Price (7288.61) moved down 2.0% in the last 4 hours (7168.65).
+BTC Price (6935.59) moved down 4.0% in the last 4 hours (7179.4).
+BTC Price (6955.86) moved up 2.0% in the last 4 hours (6850.31).
 ```
 
 See `alerts.yaml` for more examples

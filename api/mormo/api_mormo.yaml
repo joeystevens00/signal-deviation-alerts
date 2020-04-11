@@ -24,7 +24,7 @@ POST /matrix/config:
   variables:
     host: https://localhost
     user: user
-    password: pass
+    password: test
   make_global:
     config_id: .id
 GET /matrix/config/{matrix_config_id}:

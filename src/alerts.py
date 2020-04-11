@@ -54,7 +54,6 @@ async def send_to_matrix_room(alert, signal_reading, matrix_config):
     message = render_message(alert, signal_reading)
     logger.debug(f"Sending {alert} message {message}")
     matrix_log = {**matrix_config.dict(), 'message': message, 'room': alert.room}
-    logger.debug("Matrix Log: " + repr(matrix_log))
     ret = await send_matrix_message(
         MatrixLog(**matrix_log)
     )
