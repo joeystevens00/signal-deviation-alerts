@@ -1,11 +1,5 @@
-language: python
-python: 3.7
 services:
   - docker
 
-jobs:
-  include:
-    - stage: "test"
-    - script:
-          - make docker_mormo_test
-      name: integration test
+script:
+  - make docker_mormo_test
