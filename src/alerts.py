@@ -101,7 +101,7 @@ class Alert(BaseModel):
     room: Optional[str]
     last_notified: Optional[datetime]
     cooloff: Optional[timedelta]
-    signal_poll_rate: int = 60
+    poll_rate: int = 60
     signal_read_strategy: SignalStrategy = SignalStrategy.oldest_newest
 
     @property
@@ -278,7 +278,7 @@ def create_register_alert_task(alert, loop, schedule, func, **kwargs):
     )
     refresh_task = schedule(
         update,
-        interval=alert.signal_poll_rate,
+        interval=alert.poll_rate,
     )
     return update, refresh_task
 

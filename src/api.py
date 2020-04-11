@@ -95,43 +95,43 @@ def injest_signal_data(o: SignalData) -> None:
 
 @app.post("/alert", response_model=SaveAlertResult)
 def new_alert(o: Alert) -> SaveAlertResult:
-    """New Schema."""
+    """New alert."""
     return save_db(o).to_dict()
 
 
 @app.get("/alert/{alert_id}", response_model=Alert)
 def get_alert(alert_id) -> Alert:
-    """New Schema."""
+    """Get alert by ID."""
     return load_db(alert_id)
 
 
 @app.post("/matrix/config", response_model=SaveMatrixResult)
 def new_matrix_config(o: MatrixConfig) -> SaveMatrixResult:
-    """New Schema."""
+    """New Matrix Config."""
     return save_db(o).to_dict()
 
 
 @app.get("/matrix/config/{matrix_config_id}", response_model=MatrixConfig)
 def get_matrix_config(matrix_config_id) -> MatrixConfig:
-    """New Schema."""
+    """Get Matrix Config by ID."""
     return load_db(matrix_config_id)
 
 
 @app.post("/matrix/action", response_model=SaveMatrixActionResult)
 def new_matrix_action(o: MatrixAction) -> SaveMatrixActionResult:
-    """New Schema."""
+    """New Matrix Action."""
     return save_db(o).to_dict()
 
 
 @app.get("/matrix/action/{action_id}", response_model=MatrixAction)
 def load_matrix_action(action_id: str) -> MatrixAction:
-    """New Schema."""
+    """Get Matrix Action by ID."""
     return load_db(action_id)
 
 
 @app.post("/matrix/action/{action_id}/register", status_code=204, response_class=Response)
 async def register_matrix_action(action_id: str) -> None:
-    """New Schema."""
+    """Register a matrix action."""
     api = API()
     loop = api.loop
     task_registry = api.tasks

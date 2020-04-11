@@ -44,3 +44,7 @@ mormo_test:
 .PHONY: docker_mormo_test
 docker_mormo_test: signal_data
 	env MORMO_FILE=api_mormo.yaml MORMO_HOST=http://$(DOCKER_HOST):8000 $(compose-mormo) up --build --abort-on-container-exit
+
+test_against_mormo_api:
+	cd api/mormo\
+		&& python3 ../../scripts/api_client.py --test_config api_mormo.yaml --target http://localhost:8000/openapi.json --mormo_api ${MORMO_API:-http://localhost:8001} --verbose

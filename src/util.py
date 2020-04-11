@@ -26,7 +26,7 @@ def schedule_func(func, args=None, kwargs=None, interval=60, *, loop):
 
     async def periodic_func():
         while True:
-            race_buster = random.randint(1, 60000)/1000 # interval*1000 seems excessive when signal_poll_rate is high
+            race_buster = random.randint(1, 60000)/1000 # interval*1000 seems excessive when poll_rate is high
             await asyncio.sleep(race_buster, loop=loop)
             await func(*args, **kwargs)
             await asyncio.sleep(interval-race_buster, loop=loop)
