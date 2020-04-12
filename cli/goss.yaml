@@ -1,0 +1,25 @@
+file:
+  /app/src/alerts.py:
+    exists: true
+    mode: "0664"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /tmp/data:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  /app/state.pickle:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []    
+process:
+  python3:
+    running: true

@@ -1,0 +1,13 @@
+port:
+  tcp:8000:
+    listening: true
+    ip:
+    - 0.0.0.0
+file:    
+  /app/state.pickle:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
