@@ -1,5 +1,3 @@
-language: python
-python: 3.7
 services:
   - docker
 
@@ -14,4 +12,10 @@ jobs:
           - sudo curl -L https://raw.githubusercontent.com/aelsabbahy/goss/master/extras/dcgoss/dcgoss -o /usr/local/bin/dcgoss
           - sudo chmod +x /usr/local/bin/dcgoss
           - make test_docker_api
-      name: goss test
+      name: goss test api
+    - script:
+          - curl -fsSL https://goss.rocks/install | sudo sh
+          - sudo curl -L https://raw.githubusercontent.com/aelsabbahy/goss/master/extras/dcgoss/dcgoss -o /usr/local/bin/dcgoss
+          - sudo chmod +x /usr/local/bin/dcgoss
+          - make test_docker_cli
+      name: goss test cli

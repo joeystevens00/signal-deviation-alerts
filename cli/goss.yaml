@@ -15,11 +15,10 @@ file:
     contains: []
   /app/state.pickle:
     exists: true
-    mode: "0644"
     owner: root
     group: root
     filetype: file
-    contains: []    
+    contains: []
 process:
   python3:
     running: true
