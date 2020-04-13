@@ -3,10 +3,9 @@ port:
     listening: true
     ip:
     - 0.0.0.0
-file:    
+file:
   /app/state.pickle:
     exists: true
-    mode: "0644"
     owner: root
     group: root
     filetype: file
