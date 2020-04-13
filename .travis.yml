@@ -1,3 +1,5 @@
+language: python
+python: 3.7
 services:
   - docker
 
@@ -11,5 +13,5 @@ jobs:
           - curl -fsSL https://goss.rocks/install | sudo sh
           - sudo curl -L https://raw.githubusercontent.com/aelsabbahy/goss/master/extras/dcgoss/dcgoss -o /usr/local/bin/dcgoss
           - sudo chmod +x /usr/local/bin/dcgoss
-          - env MORMO_IMAGE=joeystevens00/mormo:$TRAVIS_BRANCH-api dcgoss run app
+          - make test_docker_api
       name: goss test

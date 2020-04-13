@@ -63,7 +63,7 @@ dcgoss_cli_edit:
 	$(call dcgoss-cli,edit)
 
 .PHONY: test_docker_cli
-test_docker_cli:
+test_docker_cli: signal_data
 	$(call dcgoss-cli,run)
 
 .PHONY: dcgoss_api_edit
@@ -71,5 +71,5 @@ dcgoss_api_edit:
 	$(call dcgoss-api,edit)
 
 .PHONY: test_docker_api
-test_docker_api:
+test_docker_api: signal_data
 	$(call dcgoss-api,run)
