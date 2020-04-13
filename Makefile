@@ -38,11 +38,11 @@ requirements.txt:
 
 .PHONY: docker_cli
 docker_cli: signal_data
-	env HOSTNAME=$(shell hostname)-signal_alerts_cli $(compose-cli) up --build -d
+	env HOSTNAME=signal_alerts_cli.$(shell hostname) $(compose-cli) up --build -d
 
 .PHONY: docker_api
 docker_api: signal_data
-	env HOSTNAME=$(shell hostname)-signal_alerts_api $(compose-api) up --build -d
+	env HOSTNAME=signal_alerts_api.$(shell hostname) $(compose-api) up --build -d
 
 .PHONY: mormo_test
 mormo_test:
