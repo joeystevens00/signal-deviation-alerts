@@ -1,0 +1,2 @@
+# assuming log.py from this project is in cwd
+* * * * * docker container ls | rev | awk '{print $1}' | rev | grep -vE '^NAMES$' | xargs -I{} bash -c 'docker container logs --since 1m {} | python3 log.py --host https://synapse.host --user log --password pass --room docker_logs_{}'

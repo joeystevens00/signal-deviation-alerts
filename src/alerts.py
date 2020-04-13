@@ -17,10 +17,9 @@ from model import BaseModel
 import yaml
 
 
-from log import main as send_matrix_message
+from log import main as send_matrix_message, logger
 from signals import SignalMap, EOF
 from util import Borg, get_deviation_percentage, schedule_func
-from c import logger
 
 class MatrixConfig(BaseModel):
     host: str

@@ -10,7 +10,7 @@ from alerts import (
     Alert, AlertTask, create_register_alert_task, get_schedule,
     MatrixConfig, send_to_matrix_room, SignalMap,
 )
-from c import logger
+from log import logger
 from model import BaseModel
 from util import load_db, save_db
 

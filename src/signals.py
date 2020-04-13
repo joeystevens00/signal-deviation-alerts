@@ -10,10 +10,10 @@ import aiohttp
 import pandas as pd
 import psutil
 
-from log import main as send_matrix_message
+from log import main as send_matrix_message, logger
 from util import Borg
 
-from c import Settings, logger
+from c import Settings
 
 class SignalMap:
     __shared_state = {}

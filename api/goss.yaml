@@ -5,12 +5,6 @@ file:
     group: root
     filetype: file
     contains: []
-  /app/state.pickle:
-    exists: true
-    owner: root
-    group: root
-    filetype: file
-    contains: []
   /tmp/data:
     exists: true
     owner: root

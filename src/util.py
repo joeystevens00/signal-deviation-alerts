@@ -5,7 +5,8 @@ import json
 from typing import Any, Iterable
 import random
 
-from c import logger, redis_handle
+from c import redis_handle
+from log import logger
 
 class Borg:
     __shared_state = {}

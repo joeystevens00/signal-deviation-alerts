@@ -13,12 +13,6 @@ file:
     group: root
     filetype: directory
     contains: []
-  /app/state.pickle:
-    exists: true
-    owner: root
-    group: root
-    filetype: file
-    contains: []
 process:
   python3:
     running: true

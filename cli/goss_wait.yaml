@@ -1,7 +1,0 @@
-file:
-  /app/state.pickle:
-    exists: true
-    owner: root
-    group: root
-    filetype: file
-    contains: []

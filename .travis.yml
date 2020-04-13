@@ -19,3 +19,5 @@ jobs:
           - sudo chmod +x /usr/local/bin/dcgoss
           - make test_docker_cli
       name: goss test cli
+
+script: echo -n

@@ -3,10 +3,3 @@ port:
     listening: true
     ip:
     - 0.0.0.0
-file:
-  /app/state.pickle:
-    exists: true
-    owner: root
-    group: root
-    filetype: file
-    contains: []

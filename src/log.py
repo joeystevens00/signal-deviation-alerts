@@ -7,12 +7,16 @@ import pickle
 import os
 import socket
 import sys
+import logging
 
 from nio import AsyncClient
 from nio.responses import RoomResolveAliasResponse
 
-from c import logger
-
+logging.basicConfig(
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
+logger = logging.getLogger(__name__)
 
 state_file = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -37,7 +41,10 @@ def format_message(m):
 
 
 def read_data():
-    return "\n".join(s.strip("\n") for s in sys.stdin.readlines())
+    data = sys.stdin.readlines()
+    if not data:
+        raise ValueError("Expected STDIN since no message flag provided")
+    return "\n".join(s.strip("\n") for s in data)
 
 
 async def get_client(args):
