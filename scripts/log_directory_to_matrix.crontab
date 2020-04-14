@@ -1,0 +1,3 @@
+# assuming log.py from this project is in cwd
+PASSWORD='abc'
+* * * * * bash /some/path/log_directory_to_matrix.sh
