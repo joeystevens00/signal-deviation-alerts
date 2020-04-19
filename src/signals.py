@@ -122,6 +122,24 @@ class MemoryUsageFree(Signal):
         return psutil.virtual_memory().free
 
 
+@register_signal('server_memory_swap_usage_percentage')
+class MemorySwapUsagePercentage(Signal):
+    async def __call__(self):
+        return psutil.swap_memory().percent
+
+
+@register_signal('server_memory_swap_usage_used')
+class MemorySwapUsageUsed(Signal):
+    async def __call__(self):
+        return psutil.swap_memory().used
+
+
+@register_signal('server_memory_swap_usage_free')
+class MemorySwapUsageFree(Signal):
+    async def __call__(self):
+        return psutil.swap_memory().free
+
+
 @register_signal('server_disk_usage_percent')
 class DiskUsagePercent(Signal):
     async def __call__(self):

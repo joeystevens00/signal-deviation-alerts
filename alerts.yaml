@@ -38,6 +38,30 @@
   room: server_alerts
   message: Server Memory Usage Percentage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
 - condition:
+    signal: server_memory_usage_percentage
+    timeframe:
+      minutes: 60
+    difference: 50
+    poll_rate: 30
+  room: server_alerts
+  message: Server Memory Usage Percentage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
+- condition:
+    signal: server_memory_swap_usage_percentage
+    timeframe:
+      minutes: 60
+    difference: 20
+    poll_rate: 30
+  room: server_alerts
+  message: Server Swap Memory Usage Percentage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
+- condition:
+    signal: server_memory_swap_usage_percentage
+    timeframe:
+      minutes: 60
+    difference: 0
+    poll_rate: 30
+  room: server_alerts
+  message: Server Swap Memory Usage Percentage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
+- condition:
     signal: btc_price
     timeframe:
       hours: 4
