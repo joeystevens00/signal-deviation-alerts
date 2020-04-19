@@ -159,7 +159,7 @@ def load_signal_database(dir):
     for path in os.path.os.listdir(dir):
         if path.endswith('.hdf5'):
             alert_id = path.split('.')[0]
-            alerts.data[alert_id] = pd.read_hdf(os.path.join(dir, path))
+            alerts.data[alert_id] = pd.read_hdf(os.path.join(dir, path), alert_id)
 
 
 class AlertTask:
