@@ -11,7 +11,7 @@ RUN apt-get update\
 ARG glassnode_api_key
 ENV GLASSNODE_API_KEY=$glassnode_api_key
 
-HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8000/ || exit 1
+HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8000/docs || exit 1
 
 COPY . /app/
 WORKDIR /app/src
