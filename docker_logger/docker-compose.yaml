@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  signal_alerts_cli:
+    image: docker_logger
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    build:
+      context: ..
+      dockerfile: docker_logger/Dockerfile
+      args:
+        user: "${MATRIX_USER}"
+        host: "${MATRIX_HOST}"
+        password: "${MATRIX_PASSWORD}"
