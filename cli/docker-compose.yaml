@@ -3,7 +3,7 @@ version: "3.3"
 services:
   signal_alerts_cli:
     hostname: "${HOSTNAME:-signal_alerts_cli}"
-    image: signal_alerts:cli
+    image: "${IMAGE:-signal_alerts:cli}"
     restart: always
     volumes:
       - "signaldata:/tmp/data:rw"
