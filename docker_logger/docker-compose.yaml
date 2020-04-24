@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   signal_alerts_cli:
-    image: docker_logger
+    image: "${IMAGE:-docker_logger:latest}"
     restart: always
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
