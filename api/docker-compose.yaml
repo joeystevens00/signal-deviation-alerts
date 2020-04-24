@@ -5,7 +5,7 @@ services:
     hostname: "${HOSTNAME:-signal_alerts_api}"
     depends_on:
       - redis
-    image: signal_alerts:api
+    image: "${IMAGE:-signal_alerts:api}"
     restart: always
     volumes:
       - "signaldata:/tmp/data:rw"
