@@ -5,7 +5,7 @@ WORKDIR /app
 COPY requirements.txt /app
 
 RUN apt-get update\
-  && apt-get upgrade -y\
+  && apt-get install -y cron\
   && pip install -r requirements.txt
 
 ARG user
