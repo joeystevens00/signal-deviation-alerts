@@ -2,6 +2,8 @@ version: "3.3"
 
 services:
   signal_alerts_cli:
+    deploy:
+      replicas: "${REPLICAS:-1}"    
     image: "${IMAGE:-docker_logger:latest}"
     restart: always
     volumes:
