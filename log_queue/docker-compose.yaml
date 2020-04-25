@@ -1,9 +1,9 @@
 version: "3.3"
 
 services:
-  server_alerts:
+  app:
     environment:
-      - REDIS_HOST=redis    
+      - REDIS_HOST=redis
     depends_on:
       - redis
     deploy:
@@ -14,7 +14,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     build:
       context: ..
-      dockerfile: server_alerts/Dockerfile
+      dockerfile: log_queue/Dockerfile
       args:
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
