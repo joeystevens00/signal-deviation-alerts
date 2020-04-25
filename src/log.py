@@ -46,7 +46,7 @@ def shell_exec(cmd_str):
     stderr = res.stderr.decode('utf-8')
     if stderr:
         raise ValueError(f"Command failed ({cmd_str}): {stderr}")
-    return res.stdout.decode('utf-8')
+    return res.stdout.decode('utf-8').lstrip("'").rstrip("'")
 
 
 def format_message(m):
