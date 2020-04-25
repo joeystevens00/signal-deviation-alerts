@@ -39,6 +39,15 @@
   room: server_alerts
   message: Server Disk Usage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 30 days ({{ first }}).
 - condition:
+    signal: server_disk_usage_percent
+    timeframe:
+      days: 30
+    difference: 30
+    poll_rate: 43200
+    cooloff: 86400
+  room: server_alerts
+  message: Server Disk Usage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 30 days ({{ first }}).
+- condition:
     signal: server_memory_usage_percentage
     timeframe:
       minutes: 60
@@ -59,14 +68,6 @@
     timeframe:
       minutes: 60
     difference: 20
-    poll_rate: 30
-  room: server_alerts
-  message: Server Swap Memory Usage Percentage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
-- condition:
-    signal: server_memory_swap_usage_percentage
-    timeframe:
-      minutes: 60
-    difference: 0
     poll_rate: 30
   room: server_alerts
   message: Server Swap Memory Usage Percentage ({{ last }}) moved {{ direction }} {{ diff }}% in the last 60 minutes ({{ first }}).
