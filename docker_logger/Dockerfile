@@ -28,4 +28,4 @@ WORKDIR /app/src
 RUN chmod 0644 /app/docker_logger/logger.crontab
 RUN crontab /app/docker_logger/logger.crontab
 
-CMD cron -f
+CMD /app/docker_logger/entrypoint.sh
