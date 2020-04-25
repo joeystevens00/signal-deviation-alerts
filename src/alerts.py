@@ -162,8 +162,8 @@ def get_signals(signals=None):
     return signals
 
 
-def load_signal_database(dir):
-    logger.debug(f"Loading signal database: {dir}")
+def load_signal_database():
+    logger.debug("Loading signal database")
     alerts = Alerts()
 
     r = redis_handle()
