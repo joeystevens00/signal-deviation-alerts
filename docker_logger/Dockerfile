@@ -16,8 +16,6 @@ ARG user
 ENV user=$user
 ARG host
 ENV host=$host
-ARG file
-ENV file=$file
 ARG password
 ENV password=$password
 ARG docker_hostnames
