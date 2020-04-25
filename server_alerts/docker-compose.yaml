@@ -1,17 +1,18 @@
 version: "3.3"
 
 services:
-  docker_logger:
+  server_alerts:
     deploy:
       replicas: "${REPLICAS:-1}"
-    image: "${IMAGE:-docker_logger:latest}"
+    image: "${IMAGE:-server_alerts:latest}"
     restart: always
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     build:
       context: ..
-      dockerfile: docker_logger/Dockerfile
+      dockerfile: server_alerts/Dockerfile
       args:
+        file: "${ALERTS_FILE:-server_alerts.yaml}"
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
         password: "${MATRIX_PASSWORD}"

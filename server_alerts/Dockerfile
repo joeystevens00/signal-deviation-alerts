@@ -26,8 +26,6 @@ ENV DOCKER_HOSTNAMES=$docker_hostnames
 COPY . /app/
 
 WORKDIR /app/src
+COPY $file /app/src
 
-RUN chmod 0644 /app/docker_logger/logger.crontab
-RUN crontab /app/docker_logger/logger.crontab
-
-CMD bash /app/docker_logger/entrypoint.sh
+CMD python3 alerts.py --verbose matrix-room --file "$file" --host "$host" --user "$user" --password "$password" --datadir "$datadir"

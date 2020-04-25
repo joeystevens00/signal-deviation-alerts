@@ -6,6 +6,7 @@ import json
 import pickle
 import os
 import socket
+import subprocess
 import sys
 import logging
 
@@ -36,8 +37,24 @@ def save_state(state):
         f.write(pickle.dumps(state))
 
 
+def shell_exec(cmd_str):
+    res = subprocess.run(
+        args=cmd_str.split(" "),
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+    )
+    stderr = res.stderr.decode('utf-8')
+    if stderr:
+        raise ValueError(f"Command failed ({cmd_str}): {stderr}")
+    return res.stdout.decode('utf-8')
+
+
 def format_message(m):
-    return f"{datetime.utcnow()} ({socket.gethostname()}): {m}"
+    hostname = socket.gethostname()
+    if os.getenv('DOCKER_HOSTNAMES'):
+        docker_hostname = shell_exec("docker info -f '{{.Name}}'")
+        hostname = f"{hostname}.{docker_hostname}"
+    return f"{datetime.utcnow()} ({hostname}): {m}"
 
 
 def read_data():
