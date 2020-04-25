@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  server_alerts:
+    environment:
+      - REDIS_HOST=redis    
+    depends_on:
+      - redis
+    deploy:
+      replicas: "${REPLICAS:-1}"
+    image: "${IMAGE:-server_alerts:latest}"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    build:
+      context: ..
+      dockerfile: server_alerts/Dockerfile
+      args:
+        user: "${MATRIX_USER}"
+        host: "${MATRIX_HOST}"
+        password: "${MATRIX_PASSWORD}"
+  redis:
+    image: redis
