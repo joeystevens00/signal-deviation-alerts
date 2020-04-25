@@ -4,7 +4,6 @@ import json
 from fastapi import FastAPI
 import pydantic
 from pydantic import BaseModel, BaseSettings
-import redis
 from starlette.responses import Response
 from uvicorn.config import Config
 from uvicorn.main import Server
@@ -12,24 +11,15 @@ from uvicorn.main import Server
 from alerts import MatrixLog, send_matrix_message
 from log import logger
 from api import API
+from util import redis_handle
 
 app = FastAPI(version='0.1.0')
 
 
 class Settings(BaseSettings):
-    redis_host: str = '127.0.0.1'
-    redis_port: int = 6379
     matrix_user: str
     matrix_host: str
     matrix_password: str
-
-
-def redis_handle():
-    settings = Settings().dict()
-    return redis.Redis(
-        host=settings['redis_host'],
-        port=settings['redis_port'],
-    )
 
 
 class MessageInjest(BaseModel):

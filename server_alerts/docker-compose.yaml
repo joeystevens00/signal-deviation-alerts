@@ -2,9 +2,10 @@ version: "3.3"
 
 services:
   server_alerts:
-    depends_on: [message_queue]
+    depends_on: [message_queue, redis]
     environment:
       - MESSAGE_QUEUE=message_queue:9000
+      - REDIS_HOST=redis
     deploy:
       replicas: "${REPLICAS:-1}"
     image: "${IMAGE:-server_alerts:latest}"
@@ -20,3 +21,5 @@ services:
         host: "${MATRIX_HOST}"
         password: "${MATRIX_PASSWORD}"
         docker_hostnames: 1
+  redis:
+    image: redis

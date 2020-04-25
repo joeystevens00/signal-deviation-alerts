@@ -13,13 +13,14 @@ import click
 import jinja2
 import pandas as pd
 from pandas import DataFrame, Timestamp, Timedelta
+import pyarrow as pa
 from model import BaseModel
 import yaml
 
 
 from log import enqueue as send_matrix_message, logger
 from signals import SignalMap, EOF
-from util import Borg, get_deviation_percentage, schedule_func
+from util import Borg, get_deviation_percentage, schedule_func, redis_handle
 
 class MatrixConfig(BaseModel):
     host: str
@@ -153,13 +154,23 @@ class Alerts:
             self.api = {}
 
 
+def get_signals(signals=None):
+    if signals is None:
+        signals = []
+    for signal in r.smembers('signals'):
+        signals.append(signal.decode('utf-8'))
+    return signals
+
+
 def load_signal_database(dir):
     logger.debug(f"Loading signal database: {dir}")
     alerts = Alerts()
-    for path in os.path.os.listdir(dir):
-        if path.endswith('.hdf5'):
-            alert_id = path.split('.')[0]
-            alerts.data[alert_id] = pd.read_hdf(os.path.join(dir, path), alert_id)
+
+    r = redis_handle()
+    context = pa.default_serialization_context()
+    signals = get_signals()
+    for signal in signals:
+        alerts.data[signal] = context.deserialize(r.get(signal))
 
 
 class AlertTask:
@@ -238,20 +249,14 @@ class AlertTask:
             raise e
 
 
-def save_signal_database(datadir):
-    import warnings
-    import tables
-    original_warnings = list(warnings.filters)
-    warnings.simplefilter('ignore', tables.NaturalNameWarning)
-    alerts = Alerts()
-    for alert_id, df in alerts.data.items():
-        filename=f'{alert_id}.hdf5'
-        filepath=os.path.join(datadir, filename)
-        df.to_hdf(filepath, alert_id)
-    warnings.filters = original_warnings
+def save_signal_database():
+    logger.debug("Saving signal database to redis")
+    r = redis_handle()
+    for signal, df in alerts.data.items():
+        r.sadd(signal, context.serialize(df).to_buffer().to_pybytes())
 
-async def save_signal_database_async(datadir):
-    return save_signal_database(datadir)
+async def save_signal_database_async():
+    return save_signal_database()
 
 
 @click.group()
@@ -291,7 +296,7 @@ def get_schedule(loop=None):
     )
 
 
-def process_alerts_from_file(datadir, file, func, **kwargs):
+def process_alerts_from_file(file, func, **kwargs):
     logger.debug(f"Processing alerts from file {file}")
     loop = asyncio.new_event_loop()
     schedule = get_schedule(loop)
@@ -300,18 +305,13 @@ def process_alerts_from_file(datadir, file, func, **kwargs):
         create_register_alert_task(alert, loop, schedule, func, **kwargs)
 
     save_db_task = schedule(
-        functools.partial(save_signal_database_async, datadir=datadir),
+        save_signal_database_async,
     )
-    atexit.register(functools.partial(save_signal_database, datadir=datadir))
+    atexit.register(save_signal_database)
     loop.run_forever()
 
 
 @cli.command()
-@click.option(
-    '-d', '--datadir', 'datadir', type=click.Path(),
-    help='Directory to save signal database to',
-    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data'),
-)
 @click.option('-f', '--file', 'file', type=click.Path(),
               help='Alerts to load', required=True)
 @click.option('-t', '--host', 'host', help='Synapse host', required=True)
@@ -322,50 +322,36 @@ def process_alerts_from_file(datadir, file, func, **kwargs):
     required=True,
     default=os.environ.get("MATRIX_PASSWORD"),
 )
-def matrix_room(datadir, file, host, user, password):
-    if not datadir:
-        datadir="/tmp/data"
-        if not os.path.exists(datadir):
-            os.mkdir(datadir)
-    load_signal_database(datadir)
+def matrix_room(file, host, user, password):
+    load_signal_database()
     matrix_config = MatrixConfig(
         host=host, user=user, password=password,
     )
     process_alerts_from_file(
-        datadir, file, send_to_matrix_room,
+        file, send_to_matrix_room,
         matrix_config=matrix_config,
     )
 
 
 @cli.command()
-@click.option(
-    '-d', '--datadir', 'datadir', type=click.Path(),
-    help='Directory to save signal database to',
-    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data'),
-)
 @click.option('-f', '--file', 'file', type=click.Path(),
               help='Alerts to load', required=True)
-def stdout(datadir, file):
-    load_signal_database(datadir)
+def stdout(file):
+    load_signal_database()
     process_alerts_from_file(
-        datadir, file, send_to_stdout,
+        file, send_to_stdout,
     )
 
 
 @cli.command()
-@click.option(
-    '-d', '--datadir', 'datadir', type=click.Path(),
-    help='Directory to save signal database to',
-    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data'),
-)
 @click.option('-f', '--file', 'file', type=click.Path(),
               help='Alerts to load', required=True)
 @click.option('-o', '--out', 'out', type=click.Path(),
               help='Path to save alerts to', required=True)
-def file(datadir, file, out):
-    load_signal_database(datadir)
+def file(file, out):
+    load_signal_database()
     process_alerts_from_file(
-        datadir, file, functools.partial(send_to_file, file=out),
+        file, functools.partial(send_to_file, file=out),
     )
 
 

@@ -2,14 +2,13 @@ version: "3.3"
 
 services:
   signal_alerts_cli:
-    depends_on: [message_queue]
+    depends_on: [message_queue, redis]
     environment:
-      - MESSAGE_QUEUE=message_queue:9000    
+      - MESSAGE_QUEUE=message_queue:9000
+      - REDIS_HOST=redis
     hostname: "${HOSTNAME:-signal_alerts_cli}"
     image: "${IMAGE:-signal_alerts:cli}"
     restart: always
-    volumes:
-      - "signaldata:/tmp/data:rw"
     build:
       context: ..
       dockerfile: cli/Dockerfile
@@ -18,10 +17,6 @@ services:
         host: "${MATRIX_HOST}"
         file: "${ALERTS_FILE:-alerts.yaml}"
         password: "${MATRIX_PASSWORD}"
-        datadir: /tmp/data
         glassnode_api_key: "${GLASSNODE_API_KEY}"
-
-volumes:
-  signaldata:
-    external:
-      name: signaldata
+  redis:
+    image: redis

@@ -28,4 +28,4 @@ COPY . /app/
 COPY $file /app/src
 WORKDIR /app/src
 
-CMD python3 alerts.py --verbose matrix-room --file "$file" --host "$host" --user "$user" --password "$password" --datadir "$datadir"
+CMD python3 alerts.py --verbose matrix-room --file "$file" --host "$host" --user "$user" --password "$password"

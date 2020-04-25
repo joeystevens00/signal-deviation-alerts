@@ -16,8 +16,6 @@ ARG file
 ENV file=$file
 ARG password
 ENV password=$password
-ARG datadir
-ENV datadir=$datadir
 
 ARG glassnode_api_key
 ENV GLASSNODE_API_KEY=$glassnode_api_key
@@ -27,4 +25,4 @@ COPY . /app/
 COPY $file /app/src
 WORKDIR /app/src
 
-CMD python3 alerts.py --verbose matrix-room --file "$file" --host "$host" --user "$user" --password "$password" --datadir "$datadir"
+CMD python3 alerts.py --verbose matrix-room --file "$file" --host "$host" --user "$user" --password "$password"

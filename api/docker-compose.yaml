@@ -5,10 +5,9 @@ services:
     hostname: "${HOSTNAME:-signal_alerts_api}"
     depends_on:
       - redis
+      - message_queue
     image: "${IMAGE:-signal_alerts:api}"
     restart: always
-    volumes:
-      - "signaldata:/tmp/data:rw"
     build:
       context: ..
       dockerfile: api/Dockerfile
@@ -20,8 +19,3 @@ services:
       - 8000:8000
   redis:
     image: redis
-
-volumes:
-  signaldata:
-    external:
-      name: signaldata

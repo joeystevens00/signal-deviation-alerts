@@ -3,7 +3,7 @@ version: "3.3"
 services:
   message_queue:
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=message_queue_redis
     depends_on:
       - redis
     deploy:
@@ -19,5 +19,5 @@ services:
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
         password: "${MATRIX_PASSWORD}"
-  redis:
+  message_queue_redis:
     image: redis

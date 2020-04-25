@@ -5,6 +5,9 @@ import json
 from typing import Any, Iterable
 import random
 
+import redis
+from pydantic import BaseSettings
+
 from c import redis_handle
 from log import logger
 
@@ -102,3 +105,16 @@ def save_db(o):
 
 def load_db(id):
     return DB.load_model_from_uid(redis_handle(), id)
+
+
+class GlobalSettings(BaseSettings):
+    redis_host: str = '127.0.0.1'
+    redis_port: int = 6379
+
+
+def redis_handle():
+    settings = GlobalSettings().dict()
+    return redis.Redis(
+        host=settings['redis_host'],
+        port=settings['redis_port'],
+    )
