@@ -27,12 +27,14 @@ state_file = os.path.join(
 @functools.lru_cache()
 def get_state():
     if os.path.exists(state_file):
+        logger.debug(f"Getting state from {state_file}")
         with open(state_file, 'rb') as f:
             return pickle.loads(f.read())
     return {'rooms': {}}
 
 
 def save_state(state):
+    get_state.cache_clear()
     with open(state_file, 'wb') as f:
         f.write(pickle.dumps(state))
 
