@@ -46,13 +46,13 @@ def shell_exec(cmd_str):
     stderr = res.stderr.decode('utf-8')
     if stderr:
         raise ValueError(f"Command failed ({cmd_str}): {stderr}")
-    return res.stdout.decode('utf-8').lstrip("'").rstrip("'")
+    return res.stdout.decode('utf-8')
 
 
 def format_message(m):
     hostname = socket.gethostname()
     if os.getenv('DOCKER_HOSTNAMES'):
-        docker_hostname = shell_exec("docker info -f '{{.Name}}'")
+        docker_hostname = shell_exec("docker info -f {{.Name}}")
         hostname = f"{hostname}.{docker_hostname}"
     return f"{datetime.utcnow()} ({hostname}): {m}"
 
