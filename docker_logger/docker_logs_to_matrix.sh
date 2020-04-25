@@ -1,5 +1,3 @@
-set -eux
-
 while read LINE; do export "$LINE"; done < /app/env
 
 docker container ls\
