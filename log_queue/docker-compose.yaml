@@ -5,7 +5,7 @@ services:
     environment:
       - REDIS_HOST=message_queue_redis
     depends_on:
-      - redis
+      - message_queue_redis
     deploy:
       replicas: "${REPLICAS:-1}"
     image: "${IMAGE:-server_alerts:latest}"
