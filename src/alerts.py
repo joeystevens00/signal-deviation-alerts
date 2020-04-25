@@ -323,6 +323,10 @@ def process_alerts_from_file(datadir, file, func, **kwargs):
     default=os.environ.get("MATRIX_PASSWORD"),
 )
 def matrix_room(datadir, file, host, user, password):
+    if not datadir:
+        datadir="/tmp/data"
+        if not os.path.exists(datadir):
+            os.mkdir(datadir)
     load_signal_database(datadir)
     matrix_config = MatrixConfig(
         host=host, user=user, password=password,
