@@ -2,6 +2,9 @@ version: "3.3"
 
 services:
   signal_alerts_cli:
+    depends_on: [message_queue]
+    environment:
+      - MESSAGE_QUEUE=message_queue:9000    
     hostname: "${HOSTNAME:-signal_alerts_cli}"
     image: "${IMAGE:-signal_alerts:cli}"
     restart: always

@@ -1,7 +1,7 @@
 version: "3.3"
 
 services:
-  app:
+  message_queue:
     environment:
       - REDIS_HOST=redis
     depends_on:

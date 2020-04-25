@@ -17,7 +17,7 @@ from model import BaseModel
 import yaml
 
 
-from log import main as send_matrix_message, logger
+from log import enqueue as send_matrix_message, logger
 from signals import SignalMap, EOF
 from util import Borg, get_deviation_percentage, schedule_func
 

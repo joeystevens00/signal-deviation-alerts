@@ -112,6 +112,20 @@ async def main(args):
     return ret
 
 
+async def enqueue(args):
+    session = aiohttp.ClientSession()
+    url = os.getenv('MESSAGE_QUEUE')
+    if not url:
+        raise ValueError("MESSAGE_QUEUE environment variable is not set!")
+    async with session.post(url, args.__dict__) as response:
+        status = response.status
+        data = await response.text()
+        if status != 200:
+            logger.warning(f"Error communicating with signal API (HTTP Code {status}): {data}")
+        assert status == 200
+        return url, data
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Matrix Logger')
     parser.add_argument('--host', required=True, help='Synapse host.')
@@ -123,4 +137,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.verbose:
         logger.setLevel('DEBUG')
-    asyncio.get_event_loop().run_until_complete(main(args))
+    asyncio.get_event_loop().run_until_complete(enqueue(args))
