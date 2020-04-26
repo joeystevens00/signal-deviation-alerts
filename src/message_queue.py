@@ -33,6 +33,12 @@ class Message(MessageInjest):
     password: str
 
 
+class MessageDelivery(BaseModel):
+    message: Message
+    attempts: int = 0
+    max_attempts: int = 10
+
+
 async def dequeue():
     try:
         logger.debug("Dequeue")
@@ -41,8 +47,11 @@ async def dequeue():
         m = r.rpop('injest').decode('utf-8')
         d = json.loads(m)
         logger.debug(f"Processing message: {d}")
+        if d['attempts'] >= d['max_attempts']:
+            logger.warning(f"Max tries hit for message. {d}")
+            return (await dequeue())
         ret = await send_matrix_message(Message(
-            **d,
+            **d['message'],
             host=settings.matrix_host,
             password=settings.matrix_password,
             user=settings.matrix_user
@@ -50,13 +59,13 @@ async def dequeue():
         logger.debug(f"Sent message and got back: {ret}")
     except Exception as e:
         logger.warning(f"Caught an error while sending message: {e}")
-        if e == pydantic.error_wrappers.ValidationError:
+        if type(e) == pydantic.error_wrappers.ValidationError:
             logger.warning(f"Bad message encountered: {d}")
-        print(type(e))
-        print(dir(e))
-        r.rpush('injest', m)
+        else:
+            r.rpush('injest', m)
     await asyncio.sleep(1)
     return (await dequeue())
+
 
 @app.post("/message")
 async def save_message(m: MessageInjest):
@@ -64,7 +73,8 @@ async def save_message(m: MessageInjest):
     api = API()
     if not api.tasks.get('dequeue'):
         api.tasks['dequeue'] = asyncio.ensure_future(dequeue())
-    return redis_handle().lpush('injest', m.json())
+    delivery = MessageDelivery(message=m)
+    return redis_handle().lpush('injest', delivery.json())
 
 
 def start_uvicorn():
