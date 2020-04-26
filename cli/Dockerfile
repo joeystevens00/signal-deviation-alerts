@@ -25,4 +25,6 @@ COPY . /app/
 COPY $file /app/src
 WORKDIR /app/src
 
-CMD python3 alerts.py --verbose matrix-room --file "$file" --host "$host" --user "$user" --password "$password"
+ENV MATRIX_PASSWORD=$password
+
+CMD python3 alerts.py --verbose matrix-room --file "$file" --host "$host" --user "$user"
