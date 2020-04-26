@@ -118,7 +118,7 @@ async def enqueue(args):
     url = os.getenv('MESSAGE_QUEUE')
     if not url:
         raise ValueError("MESSAGE_QUEUE environment variable is not set!")
-    async with session.post(url, args.__dict__) as response:
+    async with session.post(url, data=args.__dict__) as response:
         status = response.status
         data = await response.text()
         if status != 200:
