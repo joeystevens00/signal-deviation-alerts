@@ -7,4 +7,4 @@ docker container ls\
   | grep -vE '^NAMES$'\
   | grep -vi synapse\
   | xargs -I{} bash -c \
-    'docker container logs --since 1m {} | python3 /app/src/log.py --host "$host" --user "$user" --room docker_logs_{}'
+    'docker container logs --since 5m {} | python3 /app/src/log.py --host "$host" --user "$user" --room docker_logs_{}'
