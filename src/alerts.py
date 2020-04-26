@@ -155,6 +155,7 @@ class Alerts:
 
 
 def get_signals(signals=None):
+    r = redis_handle()
     if signals is None:
         signals = []
     for signal in r.smembers('signals'):
