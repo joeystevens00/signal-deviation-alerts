@@ -253,6 +253,8 @@ class AlertTask:
 def save_signal_database():
     logger.debug("Saving signal database to redis")
     r = redis_handle()
+    alerts = Alerts()
+    context = pa.default_serialization_context()
     for signal, df in alerts.data.items():
         r.sadd(signal, context.serialize(df).to_buffer().to_pybytes())
 
