@@ -2,11 +2,10 @@ version: "3.3"
 
 services:
   signal_alerts_cli:
-    depends_on: [redis]
+    depends_on: [message_queue]
     environment:
       - MESSAGE_QUEUE=http://message_queue:9000
       - REDIS_HOST=redis
-    hostname: "${HOSTNAME:-signal_alerts_cli}"
     image: "${IMAGE:-signal_alerts:cli}"
     restart: always
     build:
@@ -20,3 +19,19 @@ services:
         glassnode_api_key: "${GLASSNODE_API_KEY}"
   redis:
     image: redis
+  message_queue:
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    deploy:
+      replicas: "${REPLICAS:-1}"
+    image: "${IMAGE:-server_alerts:message_queue}"
+    restart: always
+    build:
+      context: ..
+      dockerfile: log_queue/Dockerfile
+      args:
+        user: "${MATRIX_USER}"
+        host: "${MATRIX_HOST}"
+        password: "${MATRIX_PASSWORD}"

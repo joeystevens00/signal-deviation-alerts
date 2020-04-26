@@ -2,9 +2,9 @@ version: "3.3"
 
 services:
   signal_alerts_api:
-    hostname: "${HOSTNAME:-signal_alerts_api}"
     depends_on:
       - redis
+      - message_queue
     image: "${IMAGE:-signal_alerts:api}"
     restart: always
     build:
@@ -18,3 +18,19 @@ services:
       - 8000:8000
   redis:
     image: redis
+  message_queue:
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    deploy:
+      replicas: "${REPLICAS:-1}"
+    image: "${IMAGE:-server_alerts:message_queue}"
+    restart: always
+    build:
+      context: ..
+      dockerfile: log_queue/Dockerfile
+      args:
+        user: "${MATRIX_USER}"
+        host: "${MATRIX_HOST}"
+        password: "${MATRIX_PASSWORD}"
