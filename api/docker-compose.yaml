@@ -5,7 +5,6 @@ services:
     hostname: "${HOSTNAME:-signal_alerts_api}"
     depends_on:
       - redis
-      - message_queue
     image: "${IMAGE:-signal_alerts:api}"
     restart: always
     build:

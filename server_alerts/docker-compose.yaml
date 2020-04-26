@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   server_alerts:
-    depends_on: [message_queue, redis]
+    depends_on: [redis]
     environment:
       - MESSAGE_QUEUE=message_queue:9000
       - REDIS_HOST=redis
