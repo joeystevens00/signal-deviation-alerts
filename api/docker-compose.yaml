@@ -27,6 +27,8 @@ services:
       replicas: "${REPLICAS:-1}"
     image: "${IMAGE:-server_alerts:message_queue}"
     restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"    
     build:
       context: ..
       dockerfile: log_queue/Dockerfile
