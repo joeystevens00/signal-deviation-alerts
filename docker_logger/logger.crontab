@@ -1,1 +1,2 @@
-*/5 * * * * bash /app/docker_logger/docker_logs_to_matrix.sh > /proc/1/fd/1 2>/proc/1/fd/2
+*/5 * * * * bash /app/docker_logger/scripts/docker_logs_to_matrix.sh > /proc/1/fd/1 2>/proc/1/fd/2
+*/10 * * * * bash /app/docker_logger/scripts/log_stats.sh > /proc/1/fd/1 2>/proc/1/fd/2

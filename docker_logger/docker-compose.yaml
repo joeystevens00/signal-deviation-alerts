@@ -2,9 +2,9 @@ version: "3.3"
 
 services:
   docker_logger:
-    depends_on: [message_queue]
+    depends_on: [queue]
     environment:
-      - MESSAGE_QUEUE=http://message_queue:9000
+      - MESSAGE_QUEUE=http://queue:9000
     deploy:
       replicas: "${REPLICAS:-1}"
     image: "${IMAGE:-docker_logger:latest}"
@@ -21,7 +21,7 @@ services:
         docker_hostnames: 1
   redis:
     image: redis
-  message_queue:
+  queue:
     environment:
       - REDIS_HOST=redis
     depends_on:
@@ -31,7 +31,7 @@ services:
     image: "${IMAGE:-server_alerts:message_queue}"
     restart: always
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"    
+      - "/var/run/docker.sock:/var/run/docker.sock"
     build:
       context: ..
       dockerfile: log_queue/Dockerfile
