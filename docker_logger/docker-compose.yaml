@@ -3,7 +3,7 @@ version: "3.3"
 services:
   docker_logger:
     environment:
-      - MESSAGE_QUEUE=message_queue:9000
+      - MESSAGE_QUEUE=http://message_queue:9000
     deploy:
       replicas: "${REPLICAS:-1}"
     image: "${IMAGE:-docker_logger:latest}"
