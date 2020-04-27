@@ -41,11 +41,11 @@ class MessageDelivery(BaseModel):
 
 async def dequeue_messages():
     async def dequeue():
+        r = redis_handle()
         m = r.rpop('injest')
         try:
             logger.debug("Dequeue")
             settings = Settings()
-            r = redis_handle()
             d = json.loads(m.decode('utf-8'))
             logger.debug(f"Processing message: {d}")
             if d['attempts'] >= d['max_attempts']:
