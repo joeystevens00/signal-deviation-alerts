@@ -30,7 +30,7 @@ services:
       replicas: "${REPLICAS:-1}"
       endpoint_mode: dnsrr
     init: true
-    image: "${IMAGE:-server_alerts:message_queue}"
+    image: "${IMAGE:-server_alerts}_queue"
     restart: always
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
