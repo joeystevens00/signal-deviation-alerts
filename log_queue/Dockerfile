@@ -21,6 +21,10 @@ ENV password=$password
 ARG docker_hostnames
 ENV DOCKER_HOSTNAMES=$docker_hostnames
 
+ENV MATRIX_USER=$user
+ENV MATRIX_PASSWORD=$password
+ENV MATRIX_HOST=$host
+
 COPY . /app/
 
 WORKDIR /app/src

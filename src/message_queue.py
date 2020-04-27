@@ -61,7 +61,7 @@ async def dequeue_messages():
         except Exception as e:
             logger.warning(f"Caught an error while sending message: {e}")
             if type(e) == pydantic.error_wrappers.ValidationError:
-                logger.warning(f"Bad message encountered: {d}")
+                logger.warning(f"Bad message encountered")
             else:
                 r.rpush('injest', m)
         await asyncio.sleep(1)
