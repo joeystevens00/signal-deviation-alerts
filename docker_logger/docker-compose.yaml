@@ -28,6 +28,8 @@ services:
       - redis
     deploy:
       replicas: "${REPLICAS:-1}"
+      endpoint_mode: dnsrr
+    init: true      
     image: "${IMAGE:-server_alerts:message_queue}"
     restart: always
     volumes:
