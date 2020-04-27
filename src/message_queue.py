@@ -3,6 +3,7 @@ from typing import Optional
 import json
 import random
 import os
+import logging
 
 from fastapi import FastAPI
 import pydantic
