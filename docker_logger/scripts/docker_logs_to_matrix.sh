@@ -1,5 +1,7 @@
 while read LINE; do export "$LINE"; done < /app/env
 
+sleep $((RANDOM/1000))
+
 for container in $(\
   docker container ls\
     | rev | awk '{print $1}' | rev\

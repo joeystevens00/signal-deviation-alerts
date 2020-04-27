@@ -1,6 +1,8 @@
 import asyncio
 from typing import Optional
 import json
+import random
+
 from fastapi import FastAPI
 import pydantic
 from pydantic import BaseModel, BaseSettings
@@ -39,10 +41,17 @@ class MessageDelivery(BaseModel):
     max_attempts: int = 10
 
 
+async def sleep_time():
+    asyncio.sleep(random.choice(range(1000, 5000))/1000)
+
+
 async def dequeue_messages():
     async def dequeue():
         r = redis_handle()
         m = r.rpop('injest')
+        if not m:
+            await sleep_time()
+            return (await dequeue())
         try:
             logger.debug("Dequeue")
             settings = Settings()
@@ -50,6 +59,7 @@ async def dequeue_messages():
             logger.debug(f"Processing message: {d}")
             if d['attempts'] >= d['max_attempts']:
                 logger.warning(f"Max tries hit for message. {d}")
+                await sleep_time()
                 return (await dequeue())
             ret = await send_matrix_message(Message(
                 **d['message'],
@@ -64,13 +74,13 @@ async def dequeue_messages():
                 logger.warning(f"Bad message encountered: {m}")
             else:
                 r.rpush('injest', m)
-        await asyncio.sleep(1)
+        await sleep_time()
         return (await dequeue())
     try:
         await dequeue()
     except Exception as e:
         logger.warning(f"Caught an error while running dequeue: {e}")
-        await asyncio.sleep(1)
+        await sleep_time()
         return (await dequeue_messages())
 
 
