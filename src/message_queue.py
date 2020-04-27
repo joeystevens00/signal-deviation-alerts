@@ -41,12 +41,12 @@ class MessageDelivery(BaseModel):
 
 async def dequeue_messages():
     async def dequeue():
+        m = r.rpop('injest')
         try:
             logger.debug("Dequeue")
             settings = Settings()
             r = redis_handle()
-            m = r.rpop('injest').decode('utf-8')
-            d = json.loads(m)
+            d = json.loads(m.decode('utf-8'))
             logger.debug(f"Processing message: {d}")
             if d['attempts'] >= d['max_attempts']:
                 logger.warning(f"Max tries hit for message. {d}")
@@ -61,7 +61,7 @@ async def dequeue_messages():
         except Exception as e:
             logger.warning(f"Caught an error while sending message: {e}")
             if type(e) == pydantic.error_wrappers.ValidationError:
-                logger.warning(f"Bad message encountered")
+                logger.warning(f"Bad message encountered: {m}")
             else:
                 r.rpush('injest', m)
         await asyncio.sleep(1)
