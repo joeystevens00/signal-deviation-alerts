@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.7"
 
 services:
   message_queue:
@@ -20,5 +20,6 @@ services:
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
         password: "${MATRIX_PASSWORD}"
+        docker_hostnames: 1
   message_queue_redis:
     image: redis

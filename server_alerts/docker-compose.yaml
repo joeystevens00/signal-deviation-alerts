@@ -1,10 +1,10 @@
-version: "3.3"
+version: "3.7"
 
 services:
   server_alerts:
     depends_on: [redis, queue]
     environment:
-      - MESSAGE_QUEUE=http://server_alerts_message_queue:9000
+      - MESSAGE_QUEUE=http://queue:9000
       - REDIS_HOST=redis
     deploy:
       replicas: "${REPLICAS:-1}"
@@ -23,7 +23,7 @@ services:
         docker_hostnames: 1
   redis:
     image: redis
-  server_alerts_message_queue:
+  queue:
     environment:
       - REDIS_HOST=redis
     depends_on:
@@ -31,7 +31,8 @@ services:
     deploy:
       replicas: "${REPLICAS:-1}"
       endpoint_mode: dnsrr
-    image: "${IMAGE:-server_alerts:message_queue}"
+    init: true
+    image: "${IMAGE:-server_alerts}_queue"
     restart: always
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -42,3 +43,4 @@ services:
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
         password: "${MATRIX_PASSWORD}"
+        docker_hostnames: 1
