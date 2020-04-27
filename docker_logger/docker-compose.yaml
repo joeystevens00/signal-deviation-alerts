@@ -4,7 +4,7 @@ services:
   docker_logger:
     depends_on: [queue]
     environment:
-      - MESSAGE_QUEUE=http://queue:9000
+      - MESSAGE_QUEUE=http://docker_logger_message_queue:9000
     deploy:
       replicas: "${REPLICAS:-1}"
     image: "${IMAGE:-docker_logger:latest}"
@@ -21,7 +21,7 @@ services:
         docker_hostnames: 1
   redis:
     image: redis
-  queue:
+  docker_logger_message_queue:
     environment:
       - REDIS_HOST=redis
     depends_on:

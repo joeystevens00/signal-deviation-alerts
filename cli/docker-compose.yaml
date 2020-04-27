@@ -4,7 +4,7 @@ services:
   signal_alerts_cli:
     depends_on: [queue]
     environment:
-      - MESSAGE_QUEUE=http://queue:9000
+      - MESSAGE_QUEUE=http://signal_alerts_cli_message_queue:9000
       - REDIS_HOST=redis
     image: "${IMAGE:-signal_alerts:cli}"
     restart: always
@@ -19,7 +19,7 @@ services:
         glassnode_api_key: "${GLASSNODE_API_KEY}"
   redis:
     image: redis
-  queue:
+  signal_alerts_cli_message_queue:
     environment:
       - REDIS_HOST=redis
     depends_on:
