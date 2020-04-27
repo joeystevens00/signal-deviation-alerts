@@ -74,7 +74,7 @@ async def dequeue_messages():
         return (await dequeue_messages())
 
 
-@app.post("/message")
+@app.post("/")
 async def save_message(m: MessageInjest):
     """Save message."""
     api = API()
