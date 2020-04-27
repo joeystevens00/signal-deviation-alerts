@@ -71,12 +71,15 @@ async def dequeue_messages():
                 logger.debug(f"Message content: {d}")
                 await sleep_time()
                 return (await dequeue())
-            ret = await send_matrix_message(Message(
-                **d['message'],
-                host=settings.matrix_host,
-                password=settings.matrix_password,
-                user=settings.matrix_user
-            ))
+            ret = await send_matrix_message(
+                Message(
+                    **d['message'],
+                    host=settings.matrix_host,
+                    password=settings.matrix_password,
+                    user=settings.matrix_user,
+                ),
+                format_func=lambda s: s,
+            )
             logger.debug(f"Sent message and got back: {ret}")
         except Exception as e:
             logger.warning(f"Caught an error while sending message: {e}")

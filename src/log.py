@@ -98,7 +98,7 @@ async def get_room(args, alias):
     return state['rooms'][alias]
 
 
-async def main(args):
+async def main(args, format_func=format_message):
     room = await get_room(args, args.room)
     client = await get_client(args)
     ret = await client.room_send(
@@ -106,7 +106,7 @@ async def main(args):
         message_type="m.room.message",
         content={
             "msgtype": "m.text",
-            "body": format_message(args.message),
+            "body": format_func(args.message),
         }
     )
     await client.close()
@@ -118,7 +118,9 @@ async def enqueue(args):
     url = os.getenv('MESSAGE_QUEUE')
     if not url:
         raise ValueError("MESSAGE_QUEUE environment variable is not set!")
-    async with session.post(url, json=args.__dict__) as response:
+    m = args.__dict__
+    m['message'] = format_message(m['message'])
+    async with session.post(url, json=m) as response:
         status = response.status
         data = await response.text()
         if status != 200:
