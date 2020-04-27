@@ -39,40 +39,49 @@ class MessageDelivery(BaseModel):
     max_attempts: int = 10
 
 
-async def dequeue():
+async def dequeue_messages():
+    async def dequeue():
+        try:
+            logger.debug("Dequeue")
+            settings = Settings()
+            r = redis_handle()
+            m = r.rpop('injest').decode('utf-8')
+            d = json.loads(m)
+            logger.debug(f"Processing message: {d}")
+            if d['attempts'] >= d['max_attempts']:
+                logger.warning(f"Max tries hit for message. {d}")
+                return (await dequeue())
+            ret = await send_matrix_message(Message(
+                **d['message'],
+                host=settings.matrix_host,
+                password=settings.matrix_password,
+                user=settings.matrix_user
+            ))
+            logger.debug(f"Sent message and got back: {ret}")
+        except Exception as e:
+            logger.warning(f"Caught an error while sending message: {e}")
+            if type(e) == pydantic.error_wrappers.ValidationError:
+                logger.warning(f"Bad message encountered: {d}")
+            else:
+                r.rpush('injest', m)
+        await asyncio.sleep(1)
+        return (await dequeue())
     try:
-        logger.debug("Dequeue")
-        settings = Settings()
-        r = redis_handle()
-        m = r.rpop('injest').decode('utf-8')
-        d = json.loads(m)
-        logger.debug(f"Processing message: {d}")
-        if d['attempts'] >= d['max_attempts']:
-            logger.warning(f"Max tries hit for message. {d}")
-            return (await dequeue())
-        ret = await send_matrix_message(Message(
-            **d['message'],
-            host=settings.matrix_host,
-            password=settings.matrix_password,
-            user=settings.matrix_user
-        ))
-        logger.debug(f"Sent message and got back: {ret}")
+        await dequeue()
     except Exception as e:
-        logger.warning(f"Caught an error while sending message: {e}")
-        if type(e) == pydantic.error_wrappers.ValidationError:
-            logger.warning(f"Bad message encountered: {d}")
-        else:
-            r.rpush('injest', m)
-    await asyncio.sleep(1)
-    return (await dequeue())
+        logger.warning(f"Caught an error while running dequeue: {e}")
+        await asyncio.sleep(1)
+        return (await dequeue_messages())
 
 
 @app.post("/message")
 async def save_message(m: MessageInjest):
     """Save message."""
     api = API()
+    logger.debug(f"Enqueue message: {m}")
     if not api.tasks.get('dequeue'):
-        api.tasks['dequeue'] = asyncio.ensure_future(dequeue())
+        logger.debug("Initializing dequeue task")
+        api.tasks['dequeue'] = asyncio.ensure_future(dequeue_messages())
     delivery = MessageDelivery(message=m)
     return redis_handle().lpush('injest', delivery.json())
 
@@ -80,6 +89,7 @@ async def save_message(m: MessageInjest):
 def start_uvicorn():
     config = Config(app=app, host="0.0.0.0", port='9000', loop="asyncio", log_level=logger.level)
     server = Server(config=config)
+    logger.debug("Starting up the message queue")
     server.run()
 
 
