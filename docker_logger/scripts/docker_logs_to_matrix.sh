@@ -5,7 +5,6 @@ for container in $(\
     | rev | awk '{print $1}' | rev\
     | grep -vE '^NAMES$'\
     | grep -vi synapse\
-    | xargs -I{} bash -c \
 )
 do
   docker container logs --since 5m $container\
