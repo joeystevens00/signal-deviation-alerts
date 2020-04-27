@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.7"
 
 services:
   docker_logger:
@@ -29,6 +29,7 @@ services:
     deploy:
       replicas: "${REPLICAS:-1}"
       endpoint_mode: dnsrr
+    init: true
     image: "${IMAGE:-server_alerts:message_queue}"
     restart: always
     volumes:
