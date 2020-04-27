@@ -67,7 +67,8 @@ async def dequeue_messages():
             d = json.loads(m.decode('utf-8'))
             logger.debug(f"Processing message: {d}")
             if d['attempts'] >= d['max_attempts']:
-                logger.warning(f"Max tries hit for message. {d}")
+                logger.warning("Max tries hit for message.")
+                logger.debug(f"Message content: {d}")
                 await sleep_time()
                 return (await dequeue())
             ret = await send_matrix_message(Message(
@@ -80,7 +81,8 @@ async def dequeue_messages():
         except Exception as e:
             logger.warning(f"Caught an error while sending message: {e}")
             if type(e) == pydantic.error_wrappers.ValidationError:
-                logger.warning(f"Bad message encountered: {m}")
+                logger.warning("Bad message encountered")
+                logger.debug(f"Bad message content: {m}")
             else:
                 r.rpush('injest', m)
         await sleep_time()
