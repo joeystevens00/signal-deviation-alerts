@@ -41,3 +41,4 @@ services:
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
         password: "${MATRIX_PASSWORD}"
+        docker_hostnames: 1
