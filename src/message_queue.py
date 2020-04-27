@@ -8,8 +8,8 @@ from starlette.responses import Response
 from uvicorn.config import Config
 from uvicorn.main import Server
 
-from alerts import MatrixLog, send_matrix_message
-from log import logger
+from alerts import MatrixLog
+from log import logger, main as send_matrix_message
 from api import API
 from util import redis_handle
 
