@@ -34,7 +34,7 @@ class Message(MessageInjest):
 
 
 class MessageDelivery(BaseModel):
-    message: Message
+    message: MessageInjest
     attempts: int = 0
     max_attempts: int = 10
 
