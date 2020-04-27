@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 import json
 import random
+import os
 
 from fastapi import FastAPI
 import pydantic
@@ -11,11 +12,18 @@ from uvicorn.config import Config
 from uvicorn.main import Server
 
 from alerts import MatrixLog
-from log import logger, main as send_matrix_message
+from log import main as send_matrix_message
 from api import API
 from util import redis_handle
 
 app = FastAPI(version='0.1.0')
+
+logging.basicConfig(
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=os.getenv('LOG_LEVEL', 'WARNING'),
+)
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
