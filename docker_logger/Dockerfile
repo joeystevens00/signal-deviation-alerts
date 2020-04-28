@@ -13,11 +13,11 @@ RUN apt-get update\
   && pip install -r requirements.txt
 
 ARG user
-ENV user=$user
+ENV MATRIX_USER=$user
 ARG host
-ENV host=$host
+ENV MATRIX_HOST=$host
 ARG password
-ENV password=$password
+ENV MATRIX_PASSWORD=$password
 ARG docker_hostnames
 ENV DOCKER_HOSTNAMES=$docker_hostnames
 

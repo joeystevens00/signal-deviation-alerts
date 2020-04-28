@@ -9,13 +9,13 @@ RUN apt-get update\
   && pip install -r requirements.txt
 
 ARG user
-ENV user=$user
+ENV MATRIX_USER=$user
 ARG host
-ENV host=$host
+ENV MATRIX_HOST=$host
 ARG file
 ENV file=$file
 ARG password
-ENV password=$password
+ENV MATRIX_PASSWORD=$password
 
 ARG glassnode_api_key
 ENV GLASSNODE_API_KEY=$glassnode_api_key
