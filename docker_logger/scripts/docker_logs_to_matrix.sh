@@ -9,6 +9,6 @@ for service in $(\
     | grep -vi synapse\
 )
 do
-  docker service logs --since 5m "$service"\
+  docker service logs --since 1m "$service"\
     | python3 /app/src/log.py --host "$MATRIX_HOST" --user "$MATRIX_USER" --room docker_$service
 done

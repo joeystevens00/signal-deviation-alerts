@@ -1,19 +1,19 @@
 version: "3.7"
 
 services:
-  docker_logger:
+  cron:
     depends_on: [queue]
     environment:
       - MESSAGE_QUEUE=http://queue:9000
     deploy:
       replicas: "${REPLICAS:-1}"
-    image: "${IMAGE:-docker_logger:latest}"
+    image: "${IMAGE:-docker_stats:latest}"
     restart: always
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     build:
       context: ..
-      dockerfile: docker_logger/Dockerfile
+      dockerfile: stats/Dockerfile
       args:
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
