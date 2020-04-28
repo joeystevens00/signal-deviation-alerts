@@ -25,7 +25,7 @@ COPY . /app/
 
 WORKDIR /app/src
 
-RUN chmod 0644 /app/docker_logger/logger.crontab
-RUN crontab /app/docker_logger/logger.crontab
+RUN chmod 0644 /app/stats/logger.crontab
+RUN crontab /app/stats/logger.crontab
 
-CMD bash /app/docker_logger/entrypoint.sh
+CMD bash /app/stats/entrypoint.sh

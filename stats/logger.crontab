@@ -1,1 +1,1 @@
-0 * * * * bash /app/docker_logger/scripts/log_stats.sh > /proc/1/fd/1 2>/proc/1/fd/2
+0 * * * * bash /app/stats/scripts/log_stats.sh > /proc/1/fd/1 2>/proc/1/fd/2
