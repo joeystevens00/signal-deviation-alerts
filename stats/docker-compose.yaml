@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  docker_logger:
+    depends_on: [queue]
+    environment:
+      - MESSAGE_QUEUE=http://queue:9000
+    deploy:
+      replicas: "${REPLICAS:-1}"
+    image: "${IMAGE:-docker_logger:latest}"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    build:
+      context: ..
+      dockerfile: docker_logger/Dockerfile
+      args:
+        user: "${MATRIX_USER}"
+        host: "${MATRIX_HOST}"
+        password: "${MATRIX_PASSWORD}"
+        docker_hostnames: 1
+  redis:
+    image: redis
+  queue:
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    deploy:
+      replicas: "${REPLICAS:-1}"
+      endpoint_mode: dnsrr
+    init: true
+    image: "${IMAGE:-server_alerts}_queue"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    build:
+      context: ..
+      dockerfile: log_queue/Dockerfile
+      args:
+        user: "${MATRIX_USER}"
+        host: "${MATRIX_HOST}"
+        password: "${MATRIX_PASSWORD}"
+        docker_hostnames: 1
