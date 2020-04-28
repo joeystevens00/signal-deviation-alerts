@@ -14,7 +14,7 @@ services:
       args:
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
-        file: "${ALERTS_FILE:-alerts.yaml}"
+        file: "${ALERTS_FILE:-alerts/btc.yaml}"
         password: "${MATRIX_PASSWORD}"
         glassnode_api_key: "${GLASSNODE_API_KEY}"
   redis:

@@ -16,7 +16,7 @@ services:
       context: ..
       dockerfile: server_alerts/Dockerfile
       args:
-        file: "${ALERTS_FILE:-server_alerts.yaml}"
+        file: "${ALERTS_FILE:-alerts/server.yaml}"
         user: "${MATRIX_USER}"
         host: "${MATRIX_HOST}"
         password: "${MATRIX_PASSWORD}"
