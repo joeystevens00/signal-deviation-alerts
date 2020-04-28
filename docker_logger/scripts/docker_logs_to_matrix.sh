@@ -6,7 +6,7 @@ for service in $(\
   docker service ls \
     | awk '{print $2}'\
     | grep -vE '^NAME$'\
-    | grep -vi synapse
+    | grep -vi synapse\
 )
 do
   docker service logs --since 5m "$service"\
